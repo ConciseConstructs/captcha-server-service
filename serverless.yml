@@ -1,4 +1,4 @@
-service: Alertur-Database
+service: Captcha
 
 
 provider:
@@ -8,15 +8,26 @@ provider:
   runtime: nodejs10.x
   role: arn:aws:iam::556332110707:role/LambdaBasicPrivileges
   environment: ${self:custom.environments.${opt:stage, 'DEV'}}
+  deploymentBucket:
+    tags:
+      saas: ${self:custom.saasName}
+      stage: ${opt:stage, 'DEV'}
+      scope: global
+      type: captcha
 
 
 custom:
-  saasName: 'Alertur'
+  saasName: 'Captcha'
   pathToHandler: "compiled/src"
   pathToJSFile: "src"
-  accessKeyId: ${ssm:Alertur-accessKeyId~true}
-  secretAccessKey: ${ssm:Alertur-secretAccessKey~true}
-  region: ${ssm:Alertur-region~true}
+  accessKeyId: ${ssm:concise-accessKeyId~true}
+  secretAccessKey: ${ssm:concise-secretAccessKey~true}
+  region: ${ssm:concise-region~true}
+  apiGatewayTags:
+    saas: ${self:custom.saasName}
+    stage: ${opt:stage, 'DEV'}
+    scope: global
+    type: captcha
   environments:
     DEV:
       saasName: ${self:custom.saasName}
@@ -34,6 +45,7 @@ custom:
 
 plugins:
   - serverless-plugin-include-dependencies
+  - serverless-tag-api-gateway
 
 
 package:
@@ -49,87 +61,35 @@ package:
 
 functions:
 
-  batch-read:
-    handler: ${self:custom.pathToHandler}/batch-read.handler
+  secretKey-get:
+    handler: ${self:custom.pathToHandler}/secretKey-get.handler
     package:
       include:
-      - "${self:custom.pathToJSFile}/batch-read.js"
+      - "${self:custom.pathToJSFile}/secretKey-get.js"
     events:
       - http:
-          path: batch-read
+          path: secretKey-get
           method: post
           cors: true
     tags:
-      type: api
+      saas: ${self:custom.saasName}
+      stage: ${opt:stage, 'DEV'}
+      scope: global
+      type: captcha
 
 
-  create:
-    handler: ${self:custom.pathToHandler}/create.handler
+  verify:
+    handler: ${self:custom.pathToHandler}/verify.handler
     package:
       include:
-      - "${self:custom.pathToJSFile}/create.js"
+      - "${self:custom.pathToJSFile}/verify.js"
     events:
       - http:
-          path: create
-          method: post
-          cors: true
-
-
-  link:
-    memorySize: 1256 # optional, in MB, default is 1024
-    timeout: 60 # optional, in seconds, default is 6
-    handler: ${self:custom.pathToHandler}/link.handler
-    package:
-      include:
-      - "${self:custom.pathToJSFile}/link.js"
-    events:
-      - http:
-          path: link
+          path: verify
           method: post
           cors: true
     tags:
-      type: api
-
-
-  unlink:
-    handler: ${self:custom.pathToHandler}/unlink.handler
-    package:
-      include:
-      - "${self:custom.pathToJSFile}/unlink.js"
-    events:
-      - http:
-          path: unlink
-          method: post
-          cors: true
-    tags:
-      type: api
-
-
-  update-links:
-    memorySize: 1856 # optional, in MB, default is 1024
-    timeout: 900 # optional, in seconds, default is 6
-    handler: ${self:custom.pathToHandler}/update-links.handler
-    package:
-      include:
-      - "${self:custom.pathToJSFile}/update-links.js"
-    events:
-      - http:
-          path: update-links
-          method: post
-          cors: true
-    tags:
-      type: api
-
-
-  scale-update:
-    handler: ${self:custom.pathToHandler}/scale-update.handler
-    package:
-      include:
-      - "${self:custom.pathToJSFile}/scale-update.js"
-    events:
-      - http:
-          path: scale-update
-          method: post
-          cors: true
-    tags:
-      type: api
+      saas: ${self:custom.saasName}
+      stage: ${opt:stage, 'DEV'}
+      scope: global
+      type: captcha
