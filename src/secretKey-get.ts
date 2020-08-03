@@ -3,20 +3,20 @@ import { IResponse } from '../lib/classes/lambdahandler/Response.class'
 import { Context, Callback } from 'aws-lambda'
 import { AWS } from 'aws-sdk'
 
-export interface IVerifyRequest {
+export interface ISecretKeyGet {
   siteName:string
 }
 
-export function handler(incomingRequest:IVerifyRequest, context:Context, callback:Callback) {
+export function handler(incomingRequest:ISecretKeyGet, context:Context, callback:Callback) {
 
   class HandlerObject extends LambdaHandler {
-    protected request:IVerifyRequest
+    protected request:ISecretKeyGet
     protected response:IResponse
     private params:any
     private systemsManager:AWS.SSM
 
 
-    constructor(incomingRequest:IVerifyRequest, context:Context, callback:Callback) {
+    constructor(incomingRequest:ISecretKeyGet, context:Context, callback:Callback) {
       super(incomingRequest, context, callback)
     }
 
