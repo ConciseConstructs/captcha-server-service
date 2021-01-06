@@ -7,7 +7,7 @@
   "description": "This is the server side code that handles user submission for captchas.",
   "dependencies": {
     "aws-sdk": "2.439.0",
-    "axios": "0.19.2"
+    "axios": "0.21.1"
   },
   "devDependencies": {
     "@types/aws-lambda": "8.10.14",
